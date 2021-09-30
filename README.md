@@ -1,7 +1,7 @@
 # SEHeadTracking
 Head Tracking Plugin for Space Engineers.
 
-Head tracking is commonly used in flight simulator games to use head movements to look around. If you don't have a head tracking system, no worries! As long as you have a webcam, you cat easily get in on the action with the Aruco tracker.
+Head tracking is commonly used in flight simulator games to use head movements to look around. If you don't have a head tracking system yet, no worries! As long as you have a webcam, you can easily get in on the action, thanks to [**opentrack**](https://github.com/opentrack/opentrack#readme)!
 
 ## Demo Video
 
@@ -15,13 +15,23 @@ Demo Video on Youtube](https://youtu.be/CP8tt_Na06c)
 The Head Tracking plugin is installed using the [Plugin Loader](https://steamcommunity.com/sharedfiles/filedetails/?id=2407984968). 
 Install the Plugin Loader as per instructions and enable *Head Tracking* plugin from **Plugins** in the game main menu.
 
-## Running with OpenTrack
+### Running with **opentrack**
 
-The plugin has been tested with [opentrack](https://github.com/opentrack/opentrack/wiki). Select *freetrack 2.0* as the output.
+The plugin has been tested with [**opentrack**](https://github.com/opentrack/opentrack/wiki), but should work with other software that supports the *freetrack* protocol.
+
+In **opentrack**, select *freetrack 2.0* as the output.
+
+Setup opentrack to track your head to your preference. Some options are highlighted below.
 
 Either start opentrack before you launch Space Engineers or during the game. Head tracking should start working immediately.
 
-## Aruco tracker
+**NOTE:** If any of the axes seem inverted, in **opentrack** you can go to *Options* and *Output* and select *Invert* on the problematic axis.
+
+#### Opentrack with neuralnet tracker
+
+This one doesn't need anything other than a webcam! Just select *neuralnet tracker* as input in opentrack and you're good to go!
+
+#### Opentrack with the Aruco tracker
 
 If you do not yet have a head tracking setup, you can easily make one! Just print out the Aruco marker, glue it to you forehead and choose *aruco - paper marker tracker* as input in opentrack. It works better than you would expect!
 
