@@ -33,7 +33,8 @@ This one doesn't need anything other than a webcam! Just select *neuralnet track
 
 #### Opentrack with the Aruco tracker
 
-If you do not yet have a head tracking setup, you can easily make one! Just print out the Aruco marker, glue it to you forehead and choose *aruco - paper marker tracker* as input in opentrack. It works better than you would expect!
+If you do not yet have a head tracking setup, you can easily make one! Just print out the Aruco marker, glue it to you forehead and choose *aruco - paper marker tracker* as input in opentrack. It works better than you would expect!  
+**Be sure to have the marker at a slight angle to the camera!**
 
 ![Aruco on forehead.](https://github.com/Corben-SpacedOut/SEHeadTracking/raw/media/media/per-aruco.png)
 
