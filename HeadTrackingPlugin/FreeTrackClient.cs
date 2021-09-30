@@ -116,10 +116,6 @@ namespace HeadTrackingPlugin
 
                     mutex.ReleaseMutex();
                 }
-                else
-                {
-                    //TODO: Stop activity.
-                }
             }
             else
             {
