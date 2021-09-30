@@ -7,6 +7,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using VRage.Game.Components;
+using VRage.Game.Utils;
+using VRageMath;
 
 namespace HeadTrackingPlugin
 {
@@ -15,9 +17,9 @@ namespace HeadTrackingPlugin
     {
         public bool TestMode { get; private set; }
 
-        private static SessionComponent instance;
-
         private static readonly string ConfigFilePath;
+
+        public static SessionComponent Instance { get; private set; }
 
         static SessionComponent()
         {
@@ -27,7 +29,7 @@ namespace HeadTrackingPlugin
 
         public override void LoadData()
         {
-            instance = this;
+            Instance = this;
             MyAPIGateway.Utilities.MessageEntered += Handle_Message;
 
             // Read TestMode from config file.
@@ -43,7 +45,7 @@ namespace HeadTrackingPlugin
 
         protected override void UnloadData()
         {
-            instance = null;
+            Instance = null;
             MyAPIGateway.Utilities.MessageEntered -= Handle_Message;
 
             // Only write config, if the file exists or defaults have changed.
@@ -86,12 +88,20 @@ namespace HeadTrackingPlugin
 
         private void DoDraw()
         {
+            var rotX = MatrixD.CreateRotationX(FreeTrackClient.Pitch);
+            var rotY = MatrixD.CreateRotationY(-FreeTrackClient.Yaw);
+            var rotZ = MatrixD.CreateRotationZ(-FreeTrackClient.Roll);
 
+            var camera = (MyCamera)MyAPIGateway.Session.Camera;
+
+            MatrixD m = camera.ViewMatrix * rotZ * rotY * rotX;
+            camera.SetViewMatrix(m);
+            camera.UploadViewMatrixToRender();
         }
 
         public static void DrawSync()
         {
-            instance?.DoDraw();
+            Instance?.DoDraw();
         }
     }
 }
