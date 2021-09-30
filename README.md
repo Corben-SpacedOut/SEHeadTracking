@@ -12,7 +12,8 @@ Demo Video on Youtube](https://youtu.be/CP8tt_Na06c)
 
 ### Installation
 
-Use the Plugin Loader. TBD.
+The Head Tracking plugin is installed using the [Plugin Loader](https://steamcommunity.com/sharedfiles/filedetails/?id=2407984968). 
+Install the Plugin Loader as per instructions and enable *Head Tracking* plugin from **Plugins** in the game main menu.
 
 ## Running with OpenTrack
 
