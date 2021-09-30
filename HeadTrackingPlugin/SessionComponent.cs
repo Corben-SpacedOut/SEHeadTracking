@@ -44,6 +44,7 @@ namespace HeadTrackingPlugin
         protected override void UnloadData()
         {
             instance = null;
+            MyAPIGateway.Utilities.MessageEntered -= Handle_Message;
 
             var mode = TestMode ? "on" : "off";
             File.WriteAllText(ConfigFilePath, $"testmode = {mode}\n");
