@@ -46,8 +46,12 @@ namespace HeadTrackingPlugin
             instance = null;
             MyAPIGateway.Utilities.MessageEntered -= Handle_Message;
 
-            var mode = TestMode ? "on" : "off";
-            File.WriteAllText(ConfigFilePath, $"testmode = {mode}\n");
+            // Only write config, if the file exists or defaults have changed.
+            if (File.Exists(ConfigFilePath) || TestMode)
+            {
+                var mode = TestMode ? "on" : "off";
+                File.WriteAllText(ConfigFilePath, $"testmode = {mode}\n");
+            }
         }
 
         private void Handle_Message(string rawMessage, ref bool sendToOthers)
