@@ -12,7 +12,7 @@ using VRageMath;
 namespace HeadTrackingPlugin
 {
     [HarmonyPatch(typeof(MySession), "DrawSync")]
-    public class Patch_MySession_Draw
+    public class Patch_MySession_DrawSync
     {
         private static bool first = true;
 
@@ -23,6 +23,8 @@ namespace HeadTrackingPlugin
                 first = false;
                 Log.Info("MySession.DrawSync patched.");
             }
+
+            SessionComponent.DrawSync();
         }
     }
 }
