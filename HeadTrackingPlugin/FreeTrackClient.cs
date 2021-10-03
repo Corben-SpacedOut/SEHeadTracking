@@ -78,12 +78,23 @@ namespace HeadTrackingPlugin
 
         private void ThreadRun()
         {
-            while (running)
+            try
             {
-                if (Update())
-                    Thread.Sleep(16);
-                else
-                    Thread.Sleep(500);
+                while (running)
+                {
+                    if (Update())
+                        Thread.Sleep(16);
+                    else
+                        Thread.Sleep(500);
+                }
+            }catch (Exception ex)
+            {
+                Log.Error("FreeTrack client thread exception: "+ex);
+                Log.Info(ex.StackTrace);
+                lock(this)
+                {
+                    thread = null;
+                }
             }
         }
 
@@ -115,6 +126,9 @@ namespace HeadTrackingPlugin
                     updated = true;
 
                     mutex.ReleaseMutex();
+                } else
+                {
+                    Log.Info("Mutex timed out!");
                 }
             }
             else
