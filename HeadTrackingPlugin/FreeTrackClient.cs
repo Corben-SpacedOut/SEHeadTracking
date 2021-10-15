@@ -119,6 +119,8 @@ namespace HeadTrackingPlugin
                     FTData data;
                     view.Read(0, out data);
 
+                    //TODO: Release resources if data isn't updated in 2 seconds.
+
                     yaw = data.Yaw;
                     pitch = data.Pitch;
                     roll = data.Roll;

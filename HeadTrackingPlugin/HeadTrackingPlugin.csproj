@@ -92,6 +92,7 @@
     <Compile Include="Patch_MySession_DrawSync.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SessionComponent.cs" />
+    <Compile Include="HeadTrackingSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

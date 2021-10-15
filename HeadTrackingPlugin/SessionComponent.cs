@@ -15,11 +15,13 @@ namespace HeadTrackingPlugin
     [MySessionComponentDescriptor(MyUpdateOrder.NoUpdate)]
     internal class SessionComponent : MySessionComponentBase
     {
-        public bool TestMode { get; private set; }
+        public bool TestMode => Settings.TestModeEnabled;
 
         private static readonly string ConfigFilePath;
 
         public static SessionComponent Instance { get; private set; }
+
+        public HeadTrackingSettings Settings { get; private set; }
 
         static SessionComponent()
         {
@@ -29,31 +31,19 @@ namespace HeadTrackingPlugin
 
         public override void LoadData()
         {
-            Instance = this;
-            MyAPIGateway.Utilities.MessageEntered += Handle_Message;
+            Settings = HeadTrackingSettings.Load();
 
-            // Read TestMode from config file.
-            if (File.Exists(ConfigFilePath))
-            {
-                var rx = new Regex(@"^\s*testmode\s*=\s*(on|true)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-                foreach (var line in File.ReadAllLines(ConfigFilePath))
-                {
-                    if (rx.IsMatch(line)) TestMode = true;
-                }
-            }
+            Instance = this;
+
+            MyAPIGateway.Utilities.MessageEntered += Handle_Message;
         }
 
         protected override void UnloadData()
         {
+            Settings.Save();
+
             Instance = null;
             MyAPIGateway.Utilities.MessageEntered -= Handle_Message;
-
-            // Only write config, if the file exists or defaults have changed.
-            if (File.Exists(ConfigFilePath) || TestMode)
-            {
-                var mode = TestMode ? "on" : "off";
-                File.WriteAllText(ConfigFilePath, $"testmode = {mode}\n");
-            }
         }
 
         private void Handle_Message(string rawMessage, ref bool sendToOthers)
@@ -67,9 +57,9 @@ namespace HeadTrackingPlugin
                 if (split.Length == 2)
                 {
                     var arg = split[1];
-                    if (arg == "on" || arg == "true") TestMode = true;
-                    if (arg == "off" || arg == "false") TestMode = false;
-                    if (arg == "toggle") TestMode = !TestMode;
+                    if (arg == "on" || arg == "true") Settings.TestModeEnabled= true;
+                    if (arg == "off" || arg == "false") Settings.TestModeEnabled = false;
+                    if (arg == "toggle") Settings.TestModeEnabled = !Settings.TestModeEnabled;
 
                 }
             }
@@ -88,15 +78,21 @@ namespace HeadTrackingPlugin
 
         private void DoDraw()
         {
-            var rotX = MatrixD.CreateRotationX(FreeTrackClient.Pitch);
-            var rotY = MatrixD.CreateRotationY(-FreeTrackClient.Yaw);
-            var rotZ = MatrixD.CreateRotationZ(-FreeTrackClient.Roll);
+            bool isCharacter = MyAPIGateway.Session.Player.Character != MyAPIGateway.Session.CameraController;
+            bool isFps = MyAPIGateway.Session.CameraController.IsInFirstPersonView;
 
-            var camera = (MyCamera)MyAPIGateway.Session.Camera;
+            if (isCharacter && isFps)
+            {
+                var rotX = MatrixD.CreateRotationX(FreeTrackClient.Pitch);
+                var rotY = MatrixD.CreateRotationY(-FreeTrackClient.Yaw);
+                var rotZ = MatrixD.CreateRotationZ(-FreeTrackClient.Roll);
 
-            MatrixD m = camera.ViewMatrix * rotZ * rotY * rotX;
-            camera.SetViewMatrix(m);
-            camera.UploadViewMatrixToRender();
+                var camera = (MyCamera)MyAPIGateway.Session.Camera;
+
+                MatrixD m = camera.ViewMatrix * rotZ * rotY * rotX;
+                camera.SetViewMatrix(m);
+                camera.UploadViewMatrixToRender();
+            }
         }
 
         public static void DrawSync()
