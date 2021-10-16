@@ -47,7 +47,7 @@ namespace HeadTrackingPlugin
         private void Handle_Message(string rawMessage, ref bool sendToOthers)
         {
             var message = rawMessage.ToLower();
-            if (message.StartsWith("/headtracking"))
+            if (message.StartsWith("/ht_options"))
             {
                 sendToOthers = false;
 
