@@ -24,7 +24,18 @@ namespace HeadTrackingPlugin
         public bool InvertYaw = false;
         public bool InvertRoll = false;
 
-        public static HeadTrackingSettings Load()
+        private static HeadTrackingSettings _Instance=null;
+
+        public static HeadTrackingSettings Instance
+        {
+            get
+            {
+                if (_Instance == null) _Instance = Load();
+                return _Instance;
+            }
+        }
+
+        private static HeadTrackingSettings Load()
         {
             string file = FilePath;
             if (File.Exists(file))
@@ -37,7 +48,8 @@ namespace HeadTrackingPlugin
                         return (HeadTrackingSettings)serializer.Deserialize(xml);
                     }
                 }
-                catch(Exception ex) {
+                catch (Exception ex)
+                {
                     Log.Error("Failed to deserialize settings. Using defaults.\nException:\n" + ex);
                 }
             }
@@ -57,9 +69,15 @@ namespace HeadTrackingPlugin
                     serializer.Serialize(stream, this);
                 }
             }
-            catch(Exception ex) {
+            catch (Exception ex)
+            {
                 Log.Error("Failed to save settings:\n" + ex);
             }
+        }
+
+        public static void Reload()
+        {
+            _Instance = Load();
         }
     }
 }

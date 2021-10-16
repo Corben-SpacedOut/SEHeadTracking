@@ -20,6 +20,8 @@ namespace HeadTrackingPlugin
         {
             Log.Info("Plugin Init.");
 
+            Log.Info("Type: " + Type.GetType("SpaceEngineers.Game.GUI.MyGuiScreenOptionsSpace, SpaceEngineers.Game"));
+
             new Harmony("com.corben.spacedout.HeadTrackingPlugin").PatchAll(Assembly.GetExecutingAssembly());
         }
 

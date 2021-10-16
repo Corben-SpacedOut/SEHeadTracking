@@ -1,4 +1,5 @@
-﻿using Sandbox.ModAPI;
+﻿using Sandbox.Graphics.GUI;
+using Sandbox.ModAPI;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,7 +22,7 @@ namespace HeadTrackingPlugin
 
         public static SessionComponent Instance { get; private set; }
 
-        public HeadTrackingSettings Settings { get; private set; }
+        public HeadTrackingSettings Settings => HeadTrackingSettings.Instance;
 
         static SessionComponent()
         {
@@ -31,24 +32,32 @@ namespace HeadTrackingPlugin
 
         public override void LoadData()
         {
-            Settings = HeadTrackingSettings.Load();
-
             Instance = this;
-
             MyAPIGateway.Utilities.MessageEntered += Handle_Message;
         }
 
         protected override void UnloadData()
         {
-            Settings.Save();
-
             Instance = null;
             MyAPIGateway.Utilities.MessageEntered -= Handle_Message;
         }
 
+        private HeadTrackingSettingsGui settingsGui = null;
+
         private void Handle_Message(string rawMessage, ref bool sendToOthers)
         {
             var message = rawMessage.ToLower();
+            if (message.StartsWith("/headtracking"))
+            {
+                sendToOthers = false;
+
+                if (settingsGui == null)
+                {
+                    settingsGui = new HeadTrackingSettingsGui();
+                    settingsGui.Closed += (_, __) => { settingsGui = null; };
+                    MyGuiSandbox.AddScreen(settingsGui);
+                }
+            }
             if (message.StartsWith("/ht_testmode"))
             {
                 sendToOthers = false;
@@ -57,7 +66,7 @@ namespace HeadTrackingPlugin
                 if (split.Length == 2)
                 {
                     var arg = split[1];
-                    if (arg == "on" || arg == "true") Settings.TestModeEnabled= true;
+                    if (arg == "on" || arg == "true") Settings.TestModeEnabled = true;
                     if (arg == "off" || arg == "false") Settings.TestModeEnabled = false;
                     if (arg == "toggle") Settings.TestModeEnabled = !Settings.TestModeEnabled;
 
@@ -78,14 +87,24 @@ namespace HeadTrackingPlugin
 
         private void DoDraw()
         {
-            bool isCharacter = MyAPIGateway.Session.Player.Character != MyAPIGateway.Session.CameraController;
-            bool isFps = MyAPIGateway.Session.CameraController.IsInFirstPersonView;
+            var settings = HeadTrackingSettings.Instance;
 
-            if (isCharacter && isFps)
+            bool isCharacter = MyAPIGateway.Session.Player.Character == MyAPIGateway.Session.CameraController;
+            bool isFps = MyAPIGateway.Session.CameraController.IsInFirstPersonView;
+            bool active = settings.Enabled &&
+                (!isCharacter ||
+                    (settings.EnabledInCharacter
+                     && (!isFps || settings.EnabledInFirstPerson)));
+
+            if (active)
             {
-                var rotX = MatrixD.CreateRotationX(FreeTrackClient.Pitch);
-                var rotY = MatrixD.CreateRotationY(-FreeTrackClient.Yaw);
-                var rotZ = MatrixD.CreateRotationZ(-FreeTrackClient.Roll);
+                var signPitch = settings.InvertPitch ? -1 : 1;
+                var signYaw = settings.InvertYaw ? -1 : 1;
+                var signRoll = settings.InvertRoll ? -1 : 1;
+
+                var rotX = MatrixD.CreateRotationX(signPitch * FreeTrackClient.Pitch);
+                var rotY = MatrixD.CreateRotationY(signYaw * -FreeTrackClient.Yaw);
+                var rotZ = MatrixD.CreateRotationZ(signRoll * -FreeTrackClient.Roll);
 
                 var camera = (MyCamera)MyAPIGateway.Session.Camera;
 
