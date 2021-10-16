@@ -1,22 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VRage.FileSystem;
 
 namespace HeadTrackingPlugin
 {
     public static class Log
     {
-        public const string NAME = "HeadTrackingPlugin.log";
+        private const string FileName = "HeadTrackingPlugin.log";
+        private static string FilePath => Path.Combine(MyFileSystem.UserDataPath, FileName);
 
         // Logs go to %APPDATA%/SpaceEngineers
         private static Lazy<string> _LogFile = new Lazy<string>(() =>
         {
-            var appdata = Environment.GetEnvironmentVariable("appdata");
-            var file = appdata + $"/SpaceEngineers/{NAME}";
-            System.IO.File.WriteAllText(file, $"Logging started.\n");
-            return file;
+            System.IO.File.WriteAllText(FilePath, $"Logging started.\n");
+            return FilePath;
         });
 
         private static string LogFile { get { return _LogFile.Value; } }
