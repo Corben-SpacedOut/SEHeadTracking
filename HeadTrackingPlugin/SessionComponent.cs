@@ -104,7 +104,7 @@ namespace HeadTrackingPlugin
 
                 var rotX = MatrixD.CreateRotationX(signPitch * FreeTrackClient.Pitch);
                 var rotY = MatrixD.CreateRotationY(signYaw * -FreeTrackClient.Yaw);
-                var rotZ = MatrixD.CreateRotationZ(signRoll * -FreeTrackClient.Roll);
+                var rotZ = MatrixD.CreateRotationZ(signRoll * FreeTrackClient.Roll);
 
                 var camera = (MyCamera)MyAPIGateway.Session.Camera;
 

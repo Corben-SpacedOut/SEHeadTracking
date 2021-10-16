@@ -161,28 +161,6 @@ namespace HeadTrackingPlugin
                         CloseScreen();
                     });
             Controls.Add(cancelButton);
-
-            Pack();
-        }
-
-        private void Pack()
-        {
-            Vector2 min = Controls.First().Position;
-            Vector2 max = Controls.First().Position + Controls.First().Size;
-
-            foreach (var c in Controls)
-            {
-                Log.Info("Control: " + c);
-
-                var p = c.Position;
-                var s = c.Size;
-
-                min = Vector2.Min(min, p);
-                max = Vector2.Max(max, p + s);
-            }
-
-            //m_size = max - min;
-            //m_position = min;
         }
 
         private void AddLabel(MyGuiControlBase control, string text, float offsetX = 0.0f)

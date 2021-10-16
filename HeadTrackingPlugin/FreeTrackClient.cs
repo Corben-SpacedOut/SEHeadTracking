@@ -34,6 +34,12 @@ namespace HeadTrackingPlugin
 
         private double startTime = 1.0 * System.DateTime.Now.Ticks / TimeSpan.TicksPerSecond;
 
+        private readonly long updateTimeout = TimeSpan.TicksPerSecond * 2;
+
+        private long lastUpdateTime = 0;
+
+        private uint previousDataID = 0xFFFFFFFF;
+
 #pragma warning disable 0649
         // https://github.com/opentrack/opentrack/blob/master/freetrackclient/fttypes.h
         private struct FTData
@@ -60,7 +66,9 @@ namespace HeadTrackingPlugin
 
         private Mutex mutex;
 
-        private MemoryMappedViewAccessor view;
+        private MemoryMappedViewAccessor viewAccessor;
+
+        private MemoryMappedFile mappedFile;
 
         private Thread thread;
         private volatile bool running;
@@ -87,14 +95,40 @@ namespace HeadTrackingPlugin
                     else
                         Thread.Sleep(500);
                 }
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
-                Log.Error("FreeTrack client thread exception: "+ex);
+                Log.Error("FreeTrack client thread exception: " + ex);
                 Log.Info(ex.StackTrace);
-                lock(this)
+                lock (this)
                 {
                     thread = null;
                 }
+            }
+            Log.Error("Head Tracking Thread Stopped!");
+        }
+
+        private void Acquire()
+        {
+            if (mutex is null && Mutex.TryOpenExisting(FT_MUTEX, out mutex))
+            {
+                mappedFile = MemoryMappedFile.OpenExisting(FT_MEM, MemoryMappedFileRights.Read);
+                viewAccessor = mappedFile.CreateViewAccessor(0, SIZEOF_FTDATA, MemoryMappedFileAccess.Read);
+
+                Log.Info("Client connected!");
+            }
+        }
+        private void Release()
+        {
+            if (mutex != null)
+            {
+                Log.Info("Client disconnected.");
+
+                mutex.Dispose();
+                mutex = null;
+
+                viewAccessor.Dispose();
+                viewAccessor = null;
             }
         }
 
@@ -104,22 +138,20 @@ namespace HeadTrackingPlugin
 
             float pitch = 0, roll = 0, yaw = 0;
 
-            if (mutex is null && Mutex.TryOpenExisting(FT_MUTEX, out mutex))
-            {
-                MemoryMappedFile mappedFile = MemoryMappedFile.OpenExisting(FT_MEM, MemoryMappedFileRights.Read);
-                view = mappedFile.CreateViewAccessor(0, SIZEOF_FTDATA, MemoryMappedFileAccess.Read);
+            Acquire();
 
-                Log.Info("Client connected!");
-            }
-
-            if (mutex != null && view != null)
+            if (mutex != null && viewAccessor != null)
             {
                 if (mutex.WaitOne(1000))
                 {
                     FTData data;
-                    view.Read(0, out data);
+                    viewAccessor.Read(0, out data);
 
-                    //TODO: Release resources if data isn't updated in 2 seconds.
+                    if (data.DataID != previousDataID)
+                    {
+                        lastUpdateTime = System.DateTime.Now.Ticks;
+                        previousDataID = data.DataID;
+                    }
 
                     yaw = data.Yaw;
                     pitch = data.Pitch;
@@ -128,9 +160,11 @@ namespace HeadTrackingPlugin
                     updated = true;
 
                     mutex.ReleaseMutex();
-                } else
+                }
+                else
                 {
                     Log.Info("Mutex timed out!");
+                    Release();
                 }
             }
             else
@@ -153,6 +187,11 @@ namespace HeadTrackingPlugin
             roll_ = roll;
             pitch_ = pitch;
             yaw_ = yaw;
+
+            if (System.DateTime.Now.Ticks - lastUpdateTime > updateTimeout)
+            {
+                Release();
+            }
 
             return updated;
         }
