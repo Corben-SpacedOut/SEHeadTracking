@@ -15,6 +15,10 @@ Demo Video on Youtube](https://youtu.be/CP8tt_Na06c)
 The Head Tracking plugin is installed using the [Plugin Loader](https://steamcommunity.com/sharedfiles/filedetails/?id=2407984968). 
 Install the Plugin Loader as per instructions and enable *Head Tracking* plugin from **Plugins** in the game main menu.
 
+#### Options menu
+
+The plugin adds a *Head Tracking* options menu into the *Options* menu. 
+
 ### Running with **opentrack**
 
 The plugin has been tested with [**opentrack**](https://github.com/opentrack/opentrack/wiki), but should work with other software that supports the *freetrack* protocol.
@@ -44,7 +48,8 @@ If you do not yet have a head tracking setup, you can easily make one! Just prin
 ### Test mode
 
 If you don't have a head tracker or you just want to see the plugin working, you can enable head movement with the test mode.
-To enable the test mode, press Enter to write a chat message and type
+The test mode can be enabled in the Head Tracking Options menu. Or using a chat message.
+Press Enter to write a chat message and type
 ````
 /ht_testmode on
 ````
