@@ -21,7 +21,6 @@ namespace HeadTrackingPlugin
         public static void Postfix(MyGuiScreenBase __instance)
         {
             var self = __instance;
-            Log.Info("Options menu: " + self);
 
             var credits = self.Controls.Where(c => c.GetType() == typeof(MyGuiControlButton)).Last();
             var separator = self.Controls.Where(c => c.GetType() == typeof(MyGuiControlSeparatorList)).Last();
@@ -53,9 +52,7 @@ namespace HeadTrackingPlugin
         public static MethodBase TargetMethod()
         {
             Type t = Type.GetType("SpaceEngineers.Game.GUI.MyGuiScreenOptionsSpace, SpaceEngineers.Game");
-            var m = t.GetMethod("RecreateControls");
-            Log.Info("Method: " + m);
-            return m;
+            return t.GetMethod("RecreateControls");
         }
     }
 }
