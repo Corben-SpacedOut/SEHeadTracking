@@ -17,7 +17,11 @@ Install the Plugin Loader as per instructions and enable *Head Tracking* plugin 
 
 #### Options menu
 
-The plugin adds a *Head Tracking* options menu into the *Options* menu. 
+The plugin adds a *Head Tracking* options menu into the *Options* menu. Alternatively, the options menu can be accessed
+in game by pressing *Enter* to type a chat message and typing
+````
+/ht_options
+````
 
 ### Running with **opentrack**
 
