@@ -3,6 +3,9 @@ Head Tracking Plugin for Space Engineers.
 
 Head tracking is commonly used in flight simulator games to use head movements to look around. If you don't have a head tracking system yet, no worries! As long as you have a webcam, you can easily get in on the action, thanks to [**opentrack**](https://github.com/opentrack/opentrack#readme)!
 
+***NOTE:*** *Head tracking is disabled in characted first person view by default for better playability.
+It can be enabled in the Head Tracking Options menu.* 
+
 ## Demo Video
 
 [![Demo Video on Youtube](https://github.com/Corben-SpacedOut/SEHeadTracking/raw/media/media/demo-thumb.png)  
@@ -33,7 +36,7 @@ Setup opentrack to track your head to your preference. Some options are highligh
 
 Either start opentrack before you launch Space Engineers or during the game. Head tracking should start working immediately.
 
-**NOTE:** If any of the axes seem inverted, in **opentrack** you can go to *Options* and *Output* and select *Invert* on the problematic axis.
+**NOTE:** If any of the axes seem inverted, you can invert the axes in the *Head Tracking Options* menu in Space Engineers or you can go to *Options* in **opentrack**, select *Output* and select *Invert* on the problematic axis.
 
 #### Opentrack with neuralnet tracker
 
