@@ -89,8 +89,8 @@ namespace HeadTrackingPlugin
         {
             var settings = HeadTrackingSettings.Instance;
 
-            bool isCharacter = MyAPIGateway.Session.Player.Character == MyAPIGateway.Session.CameraController;
-            bool isFps = MyAPIGateway.Session.CameraController.IsInFirstPersonView;
+            bool isCharacter = MyAPIGateway.Session?.Player?.Character == MyAPIGateway.Session?.CameraController;
+            bool isFps = MyAPIGateway.Session?.CameraController?.IsInFirstPersonView ?? false;
             bool active = settings.Enabled &&
                 (!isCharacter ||
                     (settings.EnabledInCharacter
@@ -108,9 +108,12 @@ namespace HeadTrackingPlugin
 
                 var camera = (MyCamera)MyAPIGateway.Session.Camera;
 
-                MatrixD m = camera.ViewMatrix * rotZ * rotY * rotX;
-                camera.SetViewMatrix(m);
-                camera.UploadViewMatrixToRender();
+                if (camera != null)
+                {
+                    MatrixD m = camera.ViewMatrix * rotZ * rotY * rotX;
+                    camera.SetViewMatrix(m);
+                    camera.UploadViewMatrixToRender();
+                }
             }
         }
 

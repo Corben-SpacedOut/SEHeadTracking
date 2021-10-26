@@ -18,7 +18,7 @@ namespace HeadTrackingPlugin
 
         public void Init(object gameInstance)
         {
-            Log.Info("Plugin Init.");
+            Log.Info($"Head Tracking Plugin Version: {Assembly.GetExecutingAssembly().GetName().Version}");
 
             new Harmony("com.corben.spacedout.HeadTrackingPlugin").PatchAll(Assembly.GetExecutingAssembly());
         }
